@@ -1,0 +1,37 @@
+import pickle
+import cv2
+from cv2 import FONT_HERSHEY_COMPLEX_SMALL
+import face_recognition as FR
+with open('TrainData.pkl','rb') as f2:
+    knownNames=pickle.load(f2)
+    knownFaceLoc=pickle.load(f2)
+    knownFaceEnc=pickle.load(f2)
+
+unknownFaces=FR.load_image_file('C:/Users/ANAND/Documents/AI_Python/DemoImages/unknown/unkown14.jpg')
+unknownFaceBGR=cv2.cvtColor(unknownFaces,cv2.COLOR_RGB2BGR)
+
+unknownfaceloc=FR.face_locations(unknownFaces)
+unknownfaceEnc=FR.face_encodings(unknownFaces,unknownfaceloc)
+
+for faceLoc,faceEnc in zip(unknownfaceloc,unknownfaceEnc):
+    top,right,bottom,left=faceLoc
+    cv2.rectangle(unknownFaceBGR,(left,top),(right,bottom),(255,0,0),2)
+    
+    matches=FR.compare_faces(knownFaceEnc,unknownfaceEnc)
+    if True in matches:
+            mindex=matches.index(True)
+            name=knownNames[mindex]
+
+            
+
+    cv2.putText(unknownFaceBGR,name,(top,left),FONT_HERSHEY_COMPLEX_SMALL,1,(255,0,0),2)
+
+
+cv2.imshow('Face_Recognition',unknownFaceBGR)
+cv2.moveWindow('Face_Recognition',0,0)
+
+cv2.waitKey(5000)
+cv2.destroyAllWindows()
+
+
+
