@@ -1,0 +1,44 @@
+import cv2
+
+cam=cv2.VideoCapture(0,cv2.CAP_DSHOW)
+
+width=640
+height=360
+
+xPos=int(width/2)
+yPos=int(height/2)
+
+radius=25
+def mycallback1(val):
+    global xPos
+    xPos=val
+
+def mycallback2(val):
+    global yPos
+    yPos=val
+
+def mycallback3(val):
+    global radius
+    radius=val
+
+cam.set(cv2.CAP_PROP_FRAME_HEIGHT,height)
+cam.set(cv2.CAP_PROP_FRAME_WIDTH,width)
+cam.set(cv2.CAP_PROP_FPS,60)
+cam.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc(*'MJPG'))
+cv2.namedWindow('myTrackbar')
+cv2.resizeWindow('myTrackbar',600,200)
+cv2.moveWindow('myTrackbar',width+xPos,0)
+cv2.createTrackbar('xPos','myTrackbar',xPos,1920,mycallback1)
+cv2.createTrackbar('yPos','myTrackbar',yPos,1080,mycallback2)
+cv2.createTrackbar('Radius','myTrackbar',0,200,mycallback3)
+while True:
+    ignore, frame=cam.read()
+
+    cv2.circle(frame,(xPos,yPos),radius,(255,0,0),3)
+    
+    cv2.imshow('myweb_cam',frame)
+   
+    cv2.moveWindow('myweb_cam',0,0)
+    if cv2.waitKey(1) & 0xff ==ord('q'):
+        break
+cam.release()
