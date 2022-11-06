@@ -1,0 +1,36 @@
+import cv2
+from cv2 import FONT_HERSHEY_COMPLEX
+
+import face_recognition as FR
+font=cv2.FONT_HERSHEY_PLAIN
+
+donFace=FR.load_image_file('C:/Users/ANAND/Documents/AI_Python/DemoImages/known/Donald Trump.jpg')
+faceLoc=FR.face_locations(donFace)[0]
+donFaceEncode=FR.face_encodings(donFace)[0]
+
+nancyFace=FR.load_image_file('C:/Users/ANAND/Documents/AI_Python/DemoImages/known/Nancy Pelosi.jpg')
+faceLoc=FR.face_locations(nancyFace)[0]
+nancyFaceEncode=FR.face_encodings(nancyFace)[0]
+
+
+knownEncodings=[donFaceEncode,nancyFaceEncode]
+names=['Donald Trump','Nancy Pelosi']
+
+unknownFaces=FR.load_image_file('C:/Users/ANAND/Documents/AI_Python/DemoImages/unknown/u3.jpg')
+unknownFacesBGR=cv2.cvtColor(unknownFaces,cv2.COLOR_RGB2BGR)
+unknownfaceLocations=FR.face_locations(unknownFaces)
+unknownfaceEncodings=FR.face_encodings(unknownFaces,unknownfaceLocations)
+
+for unknownfaceLoc,unknownfaceEncoding in zip(unknownfaceLocations,unknownfaceEncodings):
+    top,right,bottom,left=unknownfaceLoc
+    cv2.rectangle(unknownFacesBGR,(left,top),(right,bottom),(255,0,0),2)
+    name='unknown person'
+
+    matches=FR.compare_faces(knownEncodings,unknownfaceEncoding)
+    if True in matches:
+        matchIndex=matches.index(True)
+        name=names[matchIndex]
+    
+    cv2.putText(unknownFacesBGR,name,(left,top),FONT_HERSHEY_COMPLEX,1,(255,0,0),2)
+cv2.imshow('frame',unknownFacesBGR)
+cv2.waitKey(5000) 
